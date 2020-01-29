@@ -22,3 +22,16 @@ Mat
 #first argument is the vector of numbers to fill in the matrix
 Mat.bycol<-matrix(c(1,2,3,4,5,6), ncol=2, byrow=FALSE)
 Mat.bycol
+
+#subset the matrix to look at row 1, column2
+Mat.bycol[1,2]
+
+#look at all values in column 2
+Mat.bycol[,2]
+
+#read in weather station file from the data folder
+datW <- read.csv("y:\\Students\\hkropp\\a02\\2011124.csv")
+
+#get more information about the dataframe
+str(datW)
+
