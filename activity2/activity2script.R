@@ -261,6 +261,8 @@ pnorm(18.51026,
       mean(datW$TAVE[datW$siteN == 1],na.rm=TRUE) +4 ,
       sd(datW$TAVE[datW$siteN == 1],na.rm=TRUE))
 
+par(mfrow = c(1,1))
+
 #Question 7
 hist(datW$PRCP[datW$siteN == 1],
      freq=FALSE, 
@@ -270,21 +272,20 @@ hist(datW$PRCP[datW$siteN == 1],
      col="blue",
      border="white")
 
-#add mean line with red (tomato3) color
-#and thickness of 3
-abline(v = mean(datW$TAVE[datW$siteN == 1],na.rm=TRUE), 
-       col = "tomato3",
-       lwd = 3)
-#add standard deviation line below the mean with red (tomato3) color
-#and thickness of 3
-abline(v = mean(datW$TAVE[datW$siteN == 1],na.rm=TRUE) - sd(datW$TAVE[datW$siteN == 1],na.rm=TRUE), 
-       col = "tomato3", 
-       lty = 3,
-       lwd = 3)
-#add standard deviation line above the mean with red (tomato3) color
-#and thickness of 3
-abline(v = mean(datW$TAVE[datW$siteN == 1],na.rm=TRUE) + sd(datW$TAVE[datW$siteN == 1],na.rm=TRUE), 
-       col = "tomato3", 
-       lty = 3,
-       lwd = 3)
+max(datW$PRCP, na.rm = T)
+
+#Question 8
+yearlyprc <- c()
+years <- max(datW$year, na.rm = T) - min(datW$year, na.rm = T)
+for(i in 1:years){
+   yearlyprc[i]<-sum(datW$PRCP[datW$siteN == 1 & datW$year == i+ min(datW$year, na.rm = T)], na.rm = T)
+}
+
+hist(yearlyprc,
+     freq=FALSE, 
+     main = "Yearly Precipitation Histogram for Aberdeen, WA US",
+     xlab = "Yearly Precipitation in mm", 
+     ylab="Relative frequency",
+     col="lightblue",
+     border="white")
 
