@@ -285,7 +285,60 @@ hist(yearlyprc,
      freq=FALSE, 
      main = "Yearly Precipitation Histogram for Aberdeen, WA US",
      xlab = "Yearly Precipitation in mm", 
-     ylab="Relative frequency",
-     col="lightblue",
-     border="white")
+     ylab ="Relative frequency",
+     col ="lightblue",
+     border ="white")
 
+#Question 9
+yearlyprc1 <- c()
+for(i in 1:years){
+   yearlyprc1[i]<-sum(datW$PRCP[datW$siteN == 1 & datW$year == i+ min(datW$year, na.rm = T)], na.rm = T)
+}
+yearlyprc2 <- c()
+for(i in 1:years){
+   yearlyprc2[i]<-sum(datW$PRCP[datW$siteN == 2 & datW$year == i+ min(datW$year, na.rm = T)], na.rm = T)
+}
+yearlyprc3 <- c()
+for(i in 1:years){
+   yearlyprc3[i]<-sum(datW$PRCP[datW$siteN == 3 & datW$year == i+ min(datW$year, na.rm = T)], na.rm = T)
+}
+yearlyprc4 <- c()
+for(i in 1:years){
+   yearlyprc4[i]<-sum(datW$PRCP[datW$siteN == 4 & datW$year == i+ min(datW$year, na.rm = T)], na.rm = T)
+}
+yearlyprc5 <- c()
+for(i in 1:years){
+   yearlyprc5[i]<-sum(datW$PRCP[datW$siteN == 5 & datW$year == i+ min(datW$year, na.rm = T)], na.rm = T)
+}
+
+print("The average yearly precipitation for Aberdeen is:")
+mean(yearlyprc1)
+
+print("The average yearly precipitation for Livermore is:")
+mean(yearlyprc2)
+
+print("The average yearly precipitation for Mandan is:")
+mean(yearlyprc3)
+
+print("The average yearly precipitation for Mormon Flat is:")
+mean(yearlyprc4)
+
+print("The average yearly precipitation for Morrisville is:")
+mean(yearlyprc5)
+# 
+# Attempts to graph Q9 with a dual axis bar graph, but ran out of time.
+# d1 <- aggregate(datW$TAVE, by = list(datW$NAME), FUN = mean,na.rm = T)
+# 
+# d1$y <- c(mean(yearlyprc1),mean(yearlyprc2),mean(yearlyprc3),mean(yearlyprc4),mean(yearlyprc5))
+# d2 <- d1[1-3]
+# d3 <- d1[1:2]
+# d3$x <- 
+# 
+# d4 <- rbind(d3,d2)
+# 
+# ggplot(data = d1, aes(x = Group.1))+
+#    geom_bar(aes(y = x, color = "Average Temp"), position = "dodge", stat = "identity")+
+#    geom_bar(aes(y = y, color = "Average Precipitation"), position = "dodge", stat = "identity")+
+#    scale_y_continuous(sec.axis = sec_axis(~., name = "Relative humidity [%]"))
+#    
+   
