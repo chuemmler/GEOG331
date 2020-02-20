@@ -1,3 +1,5 @@
+#Charlie Huemmler
+
 #use built in iris dataset
 #take a look at it 
 head(iris)
