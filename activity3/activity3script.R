@@ -9,6 +9,25 @@ library(lubridate)
 library(tidyverse)
 
 
+install.packages("data.table")
+
+install.packages("dplyr")
+
+install.packages("formattable")
+
+install.packages("tidyr")
+
+#Load the libraries
+
+library(data.table)
+
+library(dplyr)
+
+library(formattable)
+
+library(tidyr)
+
+
 #create a function. The names of the arguements for your function will be in parentheses. Everything in curly brackets will be run each time the function is run.
 assert <- function(statement,err.message){
   #if evaluates if a statement is true or false for a single item
@@ -122,7 +141,7 @@ datW[datW$air.tempQ1 < 8,]
 datW[datW$air.tempQ1 > 33,] 
 
 
-
+#question 5
 #plot precipitation and lightning strikes on the same plot
 #normalize lighting strikes to match precipitation
 lightscale <- (max(datW$precipitation)/max(datW$lightning.acvitivy)) * datW$lightning.acvitivy
@@ -141,7 +160,7 @@ points(datW$DD[lightscale > 0], lightscale[lightscale > 0],
 
 assert(length(lightscale) == nrow(datW),err.message = "Bad")
 
-
+#question 6
 #filter out storms in wind and air temperature measurements
 # filter all values with lightning that coincides with rainfall greater than 2mm or only rainfall over 5 mm.    
 #create a new air temp column
@@ -157,5 +176,62 @@ for(i in 1:nrow(datW)){
 plot(datW$DD, datW$wind.speed2, pch=19, type="b", xlab = "Day of Year",
      ylab="Wind Speed")
 
+#question 7
 #investigating the errors in soil moisture and temp
+
+par(mfrow=c(2,2))
+
+plot(datW$DD[datW$DD > 182 & datW$DD < 195], datW$soil.moisture[datW$DD > 182 & datW$DD < 195], pch=19, type="b", xlab = "Day of Year",
+     ylab="Soil Moisture")
+abline(v=	192.8750, col="red")
+
+
+plot(datW$DD[datW$DD > 182 & datW$DD < 195], datW$soil.temp[datW$DD > 182 & datW$DD < 195], pch=19, type="b", xlab = "Day of Year",
+     ylab="Soil Temperature")
+abline(v=	192.8750, col="red")
+
+plot(datW$DD[datW$DD > 182 & datW$DD < 195], datW$air.temperature[datW$DD > 182 & datW$DD < 195], pch=19, type="b", xlab = "Day of Year",
+     ylab="Air Temperature")
+abline(v=	192.8750, col="red")
+
+
+plot(datW$DD[datW$DD > 182 & datW$DD < 195], datW$precipitation[datW$DD > 182 & datW$DD < 195], pch=19, type="b", xlab = "Day of Year",
+     ylab="Precipitation")
+abline(v=	192.8750, col="red")
+
+#question 8
+tabledf <- data.frame()
+tabledf <- data.frame(round(sum(datW$precipitation),digits = 3),
+                      round(mean(datW$air.temperature),1),
+                      round(mean(datW$wind.speed),1),
+                      round(mean(na.omit(datW$soil.moisture)),2),
+                      round(mean(na.omit(datW$soil.temp)),0))
+
+colnames(tabledf) <- c("Total Precipitation", "Mean Air Temp", "Mean Wind Speed","Mean Soil Moisture","Mean Soil Temp")
+tabledf <- rbind(tabledf, c(2118, 2118, 2118, 1411, 1411))
+tabledf <- rbind(tabledf, c("mm", "C", "2118","m.s", "meters cubed per meter cubed", "C"))
+tabledf <- rbind(tabledf, c("6/12/2018 - 7/26/2018", "6/12/2018 - 7/26/2018", "6/12/2018 - 7/26/2018","6/12/2018 - 7/11/2018", "6/12/2018 - 7/11/2018"))
+
+
+rownames(tabledf) <- c("Measure", "Number of Observations","Unit", "Data collected from")
+
+formattable(tabledf)
+
+
+#question 9 
+par(mfrow=c(2,2))
+
+plot(datW$DD, datW$air.temperature, pch=19, type="b", xlab = "Day of Year",
+     ylab="Air Temperature")
+
+plot(datW$DD, datW$precipitation, pch=19, type="b", xlab = "Day of Year",
+     ylab="Precipitation")
+
+plot(datW$DD, datW$soil.moisture, pch=19, type="b", xlab = "Day of Year",
+     ylab="Soil Moisture")
+
+plot(datW$DD, datW$soil.temp, pch=19, type="b", xlab = "Day of Year",
+     ylab="Soil Temperature")
+
+
 
