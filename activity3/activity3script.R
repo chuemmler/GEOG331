@@ -8,14 +8,14 @@ library(lubridate)
 #install.packages("tidyverse")
 library(tidyverse)
 
-
-install.packages("data.table")
-
-install.packages("dplyr")
-
-install.packages("formattable")
-
-install.packages("tidyr")
+# 
+# install.packages("data.table")
+# 
+# install.packages("dplyr")
+# 
+# install.packages("formattable")
+# 
+# install.packages("tidyr")
 
 #Load the libraries
 
@@ -52,7 +52,7 @@ assert(length(a) == length(b), "error: unequal length")
 
 
 
-
+#question3
 #read in the data file
 #skip the first 3 rows since there is additional column info
 #specify the the NA is designated differently
