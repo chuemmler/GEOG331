@@ -1,0 +1,32 @@
+# ---------------------------------- WARNING ----------------------------------------
+# Some of the data that you have obtained from this U.S. Geological Survey database
+# may not have received Director's approval. Any such data values are qualified
+# as provisional and are subject to revision. Provisional data are released on the
+# condition that neither the USGS nor the United States Government may be held liable
+# for any damages resulting from its use.
+#
+# Additional info: https://help.waterdata.usgs.gov/policies/provisional-data-statement
+#
+# File-format description:  https://help.waterdata.usgs.gov/faq/about-tab-delimited-output
+# Automated-retrieval info: https://help.waterdata.usgs.gov/faq/automated-retrievals
+#
+# Contact:   gs-w_support_nwisweb@usgs.gov
+# retrieved: 2020-02-18 16:19:00 EST       (nadww02)
+#
+# Data for the following 1 site(s) are contained in this file
+#    USGS 04240100 HARBOR BROOK AT SYRACUSE NY
+# -----------------------------------------------------------------------------------
+#
+# Data provided for site 04240100
+#            TS   parameter     Description
+#        107700       00060     Discharge, cubic feet per second
+#        107701       00065     Gage height, feet
+#
+# Data-value qualification codes included in this output:
+#        
+#     A  Approved for publication -- Processing and review completed.
+#     P  Provisional data subject to revision.
+#     e  Value has been estimated.
+#    91  Daily mean calculated from data on this day matches published daily mean within 1 percent
+# 
+
