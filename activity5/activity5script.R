@@ -5,21 +5,21 @@
 library(lubridate)
 
 #read in streamflow data
-#datclean <- read.csv("y:\\Data\\activities\\a05\\stream_flow_data.csv",na.strings = c("Eqp"))
+datclean <- read.csv("y:\\Data\\activities\\a05\\stream_flow_data.csv",na.strings = c("Eqp"))
 
 #pull data from labtop
 #datH -> datdirty
 
-datclean <- read.csv("C:/Users/Charlie/Documents/GitHub/GEOG331/activity5/a05/stream_flow_data.csv", na.strings = c("Eqp"))
+#datclean <- read.csv("C:/Users/Charlie/Documents/GitHub/GEOG331/activity5/a05/stream_flow_data.csv", na.strings = c("Eqp"))
 head(datclean)    
 
 #read in precipitation data
 #hourly precipitation is in mm
-#datRain <- read.csv("y:\\Data\\activities\\a05\\2049867.csv") 
+datRain <- read.csv("y:\\Data\\activities\\a05\\2049867.csv") 
 
 #labtop pull
 #datP -> datRain
-datRain<- read.csv("C:/Users/Charlie/Documents/GitHub/GEOG331/activity5/a05/2049867.csv")
+#datRain<- read.csv("C:/Users/Charlie/Documents/GitHub/GEOG331/activity5/a05/2049867.csv")
 head(datRain)
 
 #only use most reliable measurements
@@ -44,6 +44,12 @@ dateP <- ymd_hm(datRain$DATE)
 datRain$doy <- yday(dateP)
 #get year 
 datRain$year <- year(dateP)
+
+#another date column in datRain
+
+datRain$D2 <- date(dateP)
+
+
 
 #### get decimal formats #####
 #convert time from a string to a more usable format
@@ -116,9 +122,26 @@ axis(side = 1, at=c(1,32,60,91,121,152,182,213,244,274,305,335),
 
 #question 7
 
-noleap <- seq(1:365)
-leap <- seq(1:366)
-years <- seq(2007,2013)
+#date vec
+datevec <- data.frame(seq(ymd('2007-1-1'), ymd('2013-12-31'), by = "day"))
+datevec$allobs <- rep(NA, nrow(datevec))
+
+colnames(datevec)= c("date","allobs")
+
+j <- 1
+for(i in 1:nrow(datevec)){    #for each date... i 
+  count<-0
+  
+  while(datevec$date[i] == datRain$D2[j]){
+    j <- j + 1
+    count <- count + 1
+  }
+  print(count)
+  ifelse(count == 24,datevec$allobs[i] <- TRUE, datevec$allobs <- FALSE)
+}
+
+
+
 
 #graph past q7
 #subsest discharge and precipitation within range of interest
