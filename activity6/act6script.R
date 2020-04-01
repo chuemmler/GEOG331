@@ -156,7 +156,6 @@ for(i in 1:length(g2015)){
   g2015$diff[i]<-(area(g1966)[[i]]-area(g2015)[[i]])/area(g1966)[[i]]
 }
 
-
 spplot(g2015, "diff",main = "Percent Decrease of Glacier Size, 1966 to 2015", col = NA)
 
 
@@ -229,7 +228,7 @@ buffRaster <- rasterize(glacier500m,#vector to convert to raster
                         field=glacier500m@data$GLACNAME, #field to convert to raster data
                         background=0)#background value for missing data
 plot(buffRaster)
-#rasterize gralciers
+#rasterize glaciers
 glacRaster <- rasterize(g1966p, NDVIraster[[1]], field=g1966p@data$GLACNAME, background=0)
 #subtract buffer from original glacier
 glacZones <- buffRaster - glacRaster
@@ -244,4 +243,74 @@ head(meanChange)
 g2015p$NDVImeanch <- meanChange[2:40,2]
 
 spplot(g2015p, "NDVImeanch",  col = NA, main = "Change in mean NDVI of Area Surrounding Glacier, by Glacier")
+
+#q10
+#Figuring out how to grab p-value
+# obj <- lm(data = gAll, formula = Area2015 ~ Area1966)
+# names(summary(obj))
+# obj$coefficients[1,4]
+# summary(obj)$coefficients[1,4]
+
+funp <- function(x) {
+  if(is.na(x[1])){
+    NA}else{
+      #fit a regression and extract a pvalue
+      summary(lm(x ~ timeT))$coefficients[1,4]}}
+
+
+funPB <- function(x) {
+  if(is.na(x[1])){
+    NA}else{
+      #fit a regression and extract a pvalue
+      summary(lm(x ~ timeT))$coefficients[1,4]<0.05}}
+
+NDVIp <- calc(NDVIstack,funp)
+
+NDVIpb <- calc(NDVIstack,funPB)
+#plot the change in NDVI
+plot(NDVIpb, axes=FALSE, col = heat.colors(100, alpha = 1, rev = T), colNA= "blue", legend = F, main = "Signifigance of NDVI Change")
+plot(g2015p,add = T, border = rgb(0, 255, 255, maxColorValue = 255, 125))
+legend("topright",
+       legend = c("Significant Change","Insignificant Change", "Glacier"),
+       col = c("red","white", rgb(0, 255, 255, maxColorValue = 255, 125)),
+       pch = 15,
+       bg = "grey")
+
+
+meanChangep <- zonal(NDVIp, #NDVI function to summarize
+                    glacZones,#raster with zones
+                    "mean")#function to apply
+
+g2015p$NDVImeanchp <- meanChangep[2:40,2]
+spplot(g2015p, "NDVImeanchp",  col = NA, main = "Average P-Value of NDVI change of Area Surrounding Glacier, by Glacier")
+
+#question11
+
+NDVIavg <- calc(NDVIstack, mean)
+zoneMeans <- zonal(NDVIavg, glacZones, "mean")
+
+avgNDVI <- mean(values(NDVIavg),na.rm = T)
+
+gAll$meanNDVI <- zoneMeans[-1,2]
+g2015p$meanNDVI <- zoneMeans[-1,2]
+
+plot(gAll$Area2015, gAll$meanNDVI)
+
+plot(NDVIavg, axes = F, main = "Glaciers by if they have above average NDVI or not", legend = F)
+g2015p$NDVIcol <- ifelse(g2015p$meanNDVI<avgNDVI, "blue","red")
+plot(g2015p, add = T, col= paste(g2015p$NDVIcol), border = FALSE)
+legend("topright",
+       legend = c("Above Average NDVI","Below Average NDVI"),
+       col = c("red","blue"),
+       pch = 15,
+       bg = "grey")
+
+
+
+
+
+
+
+
+
 
