@@ -2,19 +2,33 @@
 #install.packages(c("caret","randomForest"))
 
 #install.packages("mapview","nnet")
+install.packages("ggspatial")
+install.packages("rasterVis")
+
 
 library(raster)
 library(sp)
 library(rgdal)
 library(rgeos)
+library(ggspatial)
+library(ggplot2)
 library(mapview)
 library(caret)
 library(randomForest)
 library(nnet)
+library(rasterVis)
+library(broom)
+library(dplyr)
+
+
 
 #load in data
 #set up directory for oneida data folder
 dirR <- "C:/Users/Charlie/Documents/Colgate University/The Senior Year/EDS/act7data/oneida"
+
+#for q5 graph
+nylakes <- readOGR(dsn = dirR,
+                   layer = "AreaHydrography")
 
 #read in Sentinel data
 
@@ -228,3 +242,113 @@ rf_errorM$table
 
 #look at the overall accuracy
 rf_errorM$overall
+
+#Neural Network time
+#set up grid
+nnet.grid <- expand.grid(size = seq(from = 16, to = 28, by = 2), # number of neurons units in the hidden layer 
+                         decay = seq(from = 0.1, to = 0.6, by = 0.1)) # regularization parameter to avoid over-fitting 
+
+nnet_model <- caret::train(x = trainD[,c(5:13)], y = as.factor(trainD$landcID),
+                           method = "nnet", metric="Accuracy", trainControl = tc, tuneGrid = nnet.grid,
+                           trace=T)
+
+nnet_model
+
+# Apply the neural network model to the Sentinel-2 data
+nnet_prediction <- raster::predict(allbandsCloudf, model=nnet_model)
+
+#make plot and hide legend
+plot(nnet_prediction,
+     breaks=seq(0,6), 
+     col=landclass$cols ,
+     legend=FALSE)
+legend("bottomleft", paste(landclass$landcover),
+       fill=landclass$cols ,bty="n")
+
+#extract predictions
+nn_Eval = extract(nnet_prediction, validD[,3:4])
+#confusion matrix
+nn_errorM = confusionMatrix(as.factor(nn_Eval),as.factor(validD$landcID))
+colnames(nn_errorM$table) <- landclass$landcover
+rownames(nn_errorM$table) <- landclass$landcover
+data.frame(nn_errorM$table)
+
+par(mfrow=c(2,1), mai=c(0,0,0,0))
+#random forest
+plot(rf_prediction,
+     breaks=seq(0,6), 
+     col=landclass$cols ,
+     legend=FALSE)
+#legend
+legend("bottomleft", paste(landclass$landcover),
+       fill=landclass$cols ,bty="n")
+#add title
+mtext("Random Forest", side=3,cex=2, line=-5)
+
+#neural network
+plot(nnet_prediction,
+     breaks=seq(0,6), 
+     col=landclass$cols ,
+     legend=FALSE, axes=FALSE)
+#add legend
+legend("bottomleft", paste(landclass$landcover),
+       fill=landclass$cols, bty="n")   
+#add title
+mtext("Neural network", side=3,cex=2, line=-5)
+
+#cell count neural net
+nnet_freq <- freq(nnet_prediction)
+
+#cell count random forest
+rf_freq <- freq(rf_prediction)
+
+#question 4
+algdiff <- (nnet_freq[1,2] - rf_freq[1,2]) * 400
+
+lakesizediff <- (nnet_freq[1,2] + nnet_freq[2,2] - rf_freq[1,2]-rf_freq[2,2]) * 400
+
+
+#question 5 
+
+
+
+
+nylakes$id <- row.names(nylakes)
+nylakes_tidy <- tidy(nylakes)
+nylakes_tidy <- left_join(nylakes_tidy, nylakes@data)
+
+diffraster <- rf_prediction - nnet_prediction
+rastbin <- function(rast){
+  ifelse(rast == 0, 1,0)
+}
+
+ggplot()+
+  geom_polygon(data = nylakes_tidy[which(nylakes_tidy$NAME == "Oneida Lake"),], aes(x = long, y = lat, group = group),
+               fill = NA, color = "black")
+
+diffraster <- calc(diffraster, fun = rastbin)
+
+par(mfrow=c(1,1), mai=c(0,0,0,0))
+
+gplot(diffraster) +
+  geom_raster( aes(x = x, y = y, fill = as.factor(value)))+
+  coord_fixed()+
+  scale_fill_discrete(
+                    name="",
+                    breaks=c(1,0),
+                    labels=c("Same", "Different"))+
+  labs(title = "How often do the Neural Network and Random Forest agree?", 
+       caption = paste(paste("They agreed for ", round(cellStats(diffraster, mean),3)*100,"% of the points with seed set to 13. #gogate", sep = "")))+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.title = element_text(hjust = 0.5))+
+  geom_polygon(data = nylakes_tidy[which(nylakes_tidy$NAME == "Oneida Lake"),], aes(x = long, y = lat, group = group),
+               fill = NA, color = "black")
+  
+
